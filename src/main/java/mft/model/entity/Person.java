@@ -25,6 +25,7 @@ public class Person {
     private boolean algorithmSkill;
     private boolean JavaSESkill;
     private boolean JavaEESkill;
+    private User user;
 
     @Override
     public String toString() {

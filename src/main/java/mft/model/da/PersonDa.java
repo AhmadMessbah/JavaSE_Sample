@@ -2,6 +2,7 @@ package mft.model.da;
 
 import lombok.extern.log4j.Log4j;
 import mft.model.entity.Person;
+import mft.model.entity.User;
 import mft.model.entity.enums.City;
 import mft.model.entity.enums.Gender;
 import mft.model.tools.CRUD;
@@ -25,7 +26,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
         person.setId(ConnectionProvider.getConnectionProvider().getNextId("PERSON_SEQ"));
 
         preparedStatement = connection.prepareStatement(
-                "INSERT INTO PERSON (ID, NAME, FAMILY, GENDER, BIRTH_DATE, CITY, ALGO, SE, EE) VALUES (?,?,?,?,?,?,?,?,?)"
+                "INSERT INTO PERSON_TBL (ID, NAME, FAMILY, GENDER, BIRTH_DATE, CITY, ALGO, SE, EE, USER_ID) VALUES (?,?,?,?,?,?,?,?,?, ?)"
         );
         preparedStatement.setInt(1, person.getId());
         preparedStatement.setString(2, person.getName());
@@ -36,6 +37,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
         preparedStatement.setBoolean(7, person.isAlgorithmSkill());
         preparedStatement.setBoolean(8, person.isJavaSESkill());
         preparedStatement.setBoolean(9, person.isJavaEESkill());
+        preparedStatement.setInt(10, person.getUser().getId());
         preparedStatement.execute();
         return person;
     }
@@ -43,7 +45,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
     @Override
     public Person edit(Person person) throws Exception {
         preparedStatement = connection.prepareStatement(
-                "UPDATE PERSON SET NAME=?, FAMILY=?, GENDER=?, BIRTH_DATE=?, CITY=?, ALGO=?, SE=?, EE=? WHERE ID=?"
+                "UPDATE PERSON_TBL SET NAME=?, FAMILY=?, GENDER=?, BIRTH_DATE=?, CITY=?, ALGO=?, SE=?, EE=?, USER_ID=? WHERE ID=?"
         );
         preparedStatement.setString(1, person.getName());
         preparedStatement.setString(2, person.getFamily());
@@ -53,7 +55,8 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
         preparedStatement.setBoolean(6, person.isAlgorithmSkill());
         preparedStatement.setBoolean(7, person.isJavaSESkill());
         preparedStatement.setBoolean(8, person.isJavaEESkill());
-        preparedStatement.setInt(9, person.getId());
+        preparedStatement.setInt(9, person.getUser().getId());
+        preparedStatement.setInt(10, person.getId());
         preparedStatement.execute();
         return person;
     }
@@ -61,7 +64,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
     @Override
     public Person remove(int id) throws Exception {
         preparedStatement = connection.prepareStatement(
-                "DELETE FROM PERSON WHERE ID=?"
+                "DELETE FROM PERSON_TBL WHERE ID=?"
         );
         preparedStatement.setInt(1, id);
         preparedStatement.execute();
@@ -72,7 +75,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
     public List<Person> findAll() throws Exception {
         List<Person> personList = new ArrayList<>();
 
-        preparedStatement = connection.prepareStatement("SELECT * FROM PERSON ORDER BY ID");
+        preparedStatement = connection.prepareStatement("SELECT * FROM PERSON_TBL ORDER BY ID");
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
@@ -87,6 +90,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
                     .algorithmSkill(resultSet.getBoolean("ALGO"))
                     .JavaSESkill(resultSet.getBoolean("SE"))
                     .JavaEESkill(resultSet.getBoolean("EE"))
+                    .user(User.builder().id(resultSet.getInt("USER_ID")).build())
                     .build();
 
             personList.add(person);
@@ -97,7 +101,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
 
     @Override
     public Person findById(int id) throws Exception {
-        preparedStatement = connection.prepareStatement("SELECT * FROM PERSON WHERE ID=?");
+        preparedStatement = connection.prepareStatement("SELECT * FROM PERSON_TBL WHERE ID=?");
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         Person person = null;
@@ -113,6 +117,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
                     .algorithmSkill(resultSet.getBoolean("ALGO"))
                     .JavaSESkill(resultSet.getBoolean("SE"))
                     .JavaEESkill(resultSet.getBoolean("EE"))
+                    .user(User.builder().id(resultSet.getInt("USER_ID")).build())
                     .build();
         }
         return person;
@@ -121,7 +126,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
     public List<Person> findByFamily(String family) throws Exception {
         List<Person> personList = new ArrayList<>();
 
-        preparedStatement = connection.prepareStatement("SELECT * FROM PERSON WHERE FAMILY LIKE? ORDER BY ID");
+        preparedStatement = connection.prepareStatement("SELECT * FROM PERSON_TBL WHERE FAMILY LIKE? ORDER BY ID");
         preparedStatement.setString(1, family + "%");
         ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -137,6 +142,7 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
                     .algorithmSkill(resultSet.getBoolean("ALGO"))
                     .JavaSESkill(resultSet.getBoolean("SE"))
                     .JavaEESkill(resultSet.getBoolean("EE"))
+                    .user(User.builder().id(resultSet.getInt("USER_ID")).build())
                     .build();
 
             personList.add(person);

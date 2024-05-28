@@ -1,7 +1,9 @@
 package mft.test;
 
 import mft.model.bl.PersonBl;
+import mft.model.bl.UserBl;
 import mft.model.entity.Person;
+import mft.model.entity.User;
 import mft.model.entity.enums.City;
 import mft.model.entity.enums.Gender;
 
@@ -9,31 +11,32 @@ import java.time.LocalDate;
 
 public class PersonTest {
     public static void main(String[] args) throws Exception {
-//        System.out.println(PersonBl.getPersonBl().findAll());
-//        System.out.println(PersonBl.getPersonBl().findById(3));
-//        System.out.println(PersonBl.getPersonBl().findByFamily("alipour"));
-//        System.out.println(PersonBl.getPersonBl().remove(3));
-        System.out.println(PersonBl.getPersonBl().edit(
+        User user =
+                User.builder()
+                        .username("ali")
+                        .password("ali123")
+                        .enabled(true)
+                        .build();
+
+        Person person =
                 Person.builder()
-                        .id(4)
-                        .name("aaa")
-                        .family("bbbb")
-                        .gender(Gender.Female)
-                        .city(City.Tabriz)
+                        .name("ali")
+                        .family("alipour")
+                        .gender(Gender.Male)
+                        .city(City.Shiraz)
                         .birthDate(LocalDate.now())
-                        .build()
-        ));
+                        .user(user)
+                        .build();
 
-//                System.out.println(PersonBl.getPersonBl().save(
-//                Person.builder()
-//                        .name("reza")
-//                        .family("rezaii")
-//                        .gender(Gender.Male)
-//                        .city(City.Tehran)
-//                        .birthDate(LocalDate.now())
-//                        .build()
-//        ));
+        UserBl.getUserBl().save(user);
+        System.out.println(user);
 
+        PersonBl.getPersonBl().save(person);
+        System.out.println(person);
+
+//        System.out.println(PersonBl.getPersonBl().findById(2));
+//        System.out.println(UserBl.getUserBl().findByUsername("ahmad123"));
+        System.out.println(PersonBl.getPersonBl().findAll());
 
     }
 }

@@ -5,9 +5,11 @@ import mft.controller.exceptions.FailedRequiermentException;
 import mft.controller.exceptions.NoPersonFoundException;
 import mft.model.da.PersonDa;
 import mft.model.entity.Person;
+import mft.model.entity.User;
 import mft.model.tools.CRUD;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PersonBl implements CRUD<Person> {
     @Getter
@@ -52,9 +54,17 @@ public class PersonBl implements CRUD<Person> {
     @Override
     public List<Person> findAll() throws Exception {
         try (PersonDa personDa = new PersonDa()) {
-            List<Person> perosnList = personDa.findAll();
-            if (!perosnList.isEmpty()) {
-                return perosnList;
+            List<Person> personList = personDa.findAll();
+            if (!personList.isEmpty()) {
+//                personList
+//                        .stream()
+//                        .map(person -> person.setUser(UserBl.getUserBl().findById(person.getUser().getId())))
+//                        .collect(Collectors.toList());
+
+                for (Person person : personList) {
+                    person.setUser(UserBl.getUserBl().findById(person.getUser().getId()));
+                }
+                return personList;
             } else {
                 throw new NoPersonFoundException();
             }
@@ -66,6 +76,9 @@ public class PersonBl implements CRUD<Person> {
         try (PersonDa personDa = new PersonDa()) {
             Person person = personDa.findById(id);
             if (person != null) {
+                int userId = person.getUser().getId();
+                User user = UserBl.getUserBl().findById(userId);
+                person.setUser(user);
                 return person;
             } else {
                 throw new NoPersonFoundException();
@@ -75,9 +88,12 @@ public class PersonBl implements CRUD<Person> {
 
     public List<Person> findByFamily(String family) throws Exception {
         try (PersonDa personDa = new PersonDa()) {
-            List<Person> perosnList = personDa.findByFamily(family);
-            if (!perosnList.isEmpty()) {
-                return perosnList;
+            List<Person> personList = personDa.findByFamily(family);
+            if (!personList.isEmpty()) {
+                for (Person person : personList) {
+                    person.setUser(UserBl.getUserBl().findById(person.getUser().getId()));
+                }
+                return personList;
             } else {
                 throw new NoPersonFoundException();
             }
