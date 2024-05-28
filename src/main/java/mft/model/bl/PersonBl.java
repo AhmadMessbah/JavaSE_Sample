@@ -99,4 +99,13 @@ public class PersonBl implements CRUD<Person> {
             }
         }
     }
+
+    public Person findByUsername(String username)throws Exception {
+        try (PersonDa personDa = new PersonDa()) {
+            User user = UserBl.getUserBl().findByUsername(username);
+            Person person = personDa.findByUserId(user.getId());
+            person.setUser(UserBl.getUserBl().findById(person.getUser().getId()));
+            return person;
+        }
+    }
 }

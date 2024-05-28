@@ -123,6 +123,29 @@ public class PersonDa implements AutoCloseable, CRUD<Person> {
         return person;
     }
 
+    public Person findByUserId(int userId) throws Exception {
+        preparedStatement = connection.prepareStatement("SELECT * FROM PERSON_TBL WHERE USER_ID=?");
+        preparedStatement.setInt(1, userId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        Person person = null;
+        if (resultSet.next()) {
+            person = Person
+                    .builder()
+                    .id(resultSet.getInt("ID"))
+                    .name(resultSet.getString("NAME"))
+                    .family(resultSet.getString("FAMILY"))
+                    .gender(Gender.valueOf(resultSet.getString("GENDER")))
+                    .birthDate(resultSet.getDate("BIRTH_DATE").toLocalDate())
+                    .city(City.valueOf(resultSet.getString("CITY")))
+                    .algorithmSkill(resultSet.getBoolean("ALGO"))
+                    .JavaSESkill(resultSet.getBoolean("SE"))
+                    .JavaEESkill(resultSet.getBoolean("EE"))
+                    .user(User.builder().id(resultSet.getInt("USER_ID")).build())
+                    .build();
+        }
+        return person;
+    }
+
     public List<Person> findByFamily(String family) throws Exception {
         List<Person> personList = new ArrayList<>();
 
